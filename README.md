@@ -1,6 +1,6 @@
 # Unit 3 Project - Treehouse Full Stack Javascript TechDegree
 
-## Interactive Form
+## Project: Interactive Form
 
 This project is a sign up form for a fictional Team Treehouse Conference called "FullStack Conf".
 
