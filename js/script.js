@@ -2,8 +2,8 @@ const name = document.querySelector('#name')
 const otherJobRole = document.querySelector('option[value="other"]')
 const jobRoleSelect = document.querySelector('#title')
 const otherTitleInput = document.querySelector('#other-title')
-const designMenu = document.querySelector('#design')
-const colorMenu = document.querySelector('#color')
+
+// console.log('working')
 
 // Set initial focus to the Name field on page load
 name.focus()
@@ -21,12 +21,20 @@ jobRoleSelect.addEventListener('change', (e) => {
     }
 })
 
-// If no T-Shirt theme is selected, no colors should be displayed in colors menu.  Color field should say 'Please select a T-shirt theme'
+const tShirtInfo = () => {
+    const designMenu = document.querySelector('#design') // design dropdown
+    const colorMenu = document.querySelector('#color') // color dropdown
+    const option = document.createElement('option')
+    option.textContent = 'Please choose a T-shirt design'
+    colorMenu.appendChild(option)
 
-designMenu.addEventListener('change', (e) => {
-    let designMenuValue = e.target.value
-   
-})
+    if(designMenu.value === 'Select Theme') {
+        for(let i = 0; i < colorMenu.length; i++ ) {
+            if(colorMenu[i].value !== 'Please choose a T-shirt design') {
+                colorMenu[i].remove()
+            }
+        }
+    }
+}
 
-console.log(designMenu)
-console.log(colorMenu)
+tShirtInfo()
