@@ -16,25 +16,56 @@ jobRoleSelect.addEventListener('change', (e) => {
     let jobRole = e.target.value
     if(jobRole === 'other') {
         otherTitleInput.hidden=false
-    } else{
+    } 
+    else{
         otherTitleInput.hidden=true
     }
 })
 
 const tShirtInfo = () => {
     const designMenu = document.querySelector('#design') // design dropdown
-    const colorMenu = document.querySelector('#color') // color dropdown
+    const colorMenu = document.querySelector('#color')// color dropdown
     const option = document.createElement('option')
-    option.textContent = 'Please choose a T-shirt design'
+    option.defaultSelected = true
+    option.text = 'Please choose a T-shirt theme'
     colorMenu.appendChild(option)
+    colorMenu.disabled = true
 
-    if(designMenu.value === 'Select Theme') {
-        for(let i = 0; i < colorMenu.length; i++ ) {
-            if(colorMenu[i].value !== 'Please choose a T-shirt design') {
-                colorMenu[i].remove()
+    designMenu.addEventListener('change', (e) => {
+        const selection = e.target.value
+
+        if(selection !== 'Select Theme'){
+            colorMenu.disabled = false
+        }
+
+        // T-shirt Color choices
+        if(selection === 'heart js') {
+            for(let i = 0; i < colorMenu.length; i++) {
+                if(colorMenu.options[i].text.includes('Puns')) {
+                    colorMenu.options[i].hidden = true
+                }
+                if(colorMenu.options[i].text.includes('♥')) {
+                    colorMenu.options[i].hidden = false
+                    colorMenu[3].defaultSelected = true
+                }
             }
+        } 
+
+        if(selection === 'js puns') {
+            for(let i = 0; i < colorMenu.length; i++) {
+                if(colorMenu.options[i].text.includes('♥')) {
+                    colorMenu.options[i].hidden = true
+                } else if(colorMenu.options[i].text.includes('Puns')) {
+                    colorMenu.options[i].hidden = false
+                    colorMenu[0].defaultSelected = true
+                }
         }
     }
+        if(selection === 'Select Theme') {
+           
+        }
+    })
 }
+    
 
 tShirtInfo()
