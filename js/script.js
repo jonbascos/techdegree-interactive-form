@@ -67,11 +67,7 @@ const tShirtInfo = () => {
                 }
         }
     }
-        if(selection === 'Select Theme') {
-           
-        }
     })
 }
     
-
 tShirtInfo()
