@@ -26,16 +26,22 @@ const tShirtInfo = () => {
     const designMenu = document.querySelector('#design') // design dropdown
     const colorMenu = document.querySelector('#color')// color dropdown
     const option = document.createElement('option')
+    
+    // Create default 'Please choose a T-shirt theme' option in color dropdown if a T-shirt theme isn't chosen.
     option.defaultSelected = true
     option.text = 'Please choose a T-shirt theme'
     colorMenu.appendChild(option)
     colorMenu.disabled = true
 
+    // Listens for any changes to the Design dropdown menu
     designMenu.addEventListener('change', (e) => {
         const selection = e.target.value
-
+        let lastColorOption = colorMenu.options.length - 1
         if(selection !== 'Select Theme'){
             colorMenu.disabled = false
+        } else {
+            colorMenu[lastColorOption].selected = true
+            colorMenu.disabled = true
         }
 
         // T-shirt Color choices
