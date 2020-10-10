@@ -106,10 +106,12 @@ const activities = () => {
             if(dayTime === activitiesInputs[i].getAttribute('data-day-and-time') && click !== activitiesInputs[i]) {
                 if(click.checked) {
                     activitiesInputs[i].disabled = true
+                    // Places a line through activities that overlap  
                     activitiesLabel[i].style.textDecoration = 'line-through'
                     activitiesLabel[i].style.textDecorationColor = 'red'
                 } else{
                     activitiesInputs[i].disabled = false
+                    // Removes line through activities if they were overlaping, but not anymore
                     activitiesLabel[i].style.textDecoration = 'none'
                 }
             }
@@ -117,3 +119,39 @@ const activities = () => {
     })
 }
 activities()
+
+// This function will handle the UI for the payment info.  It will show you only the information that is needed for that specific payment type.
+const paymentInfo = () => {
+    const payment = document.querySelector('#payment')
+    const paymentMethods = document.querySelectorAll('#payment option')
+    const paypalPayment = document.querySelector('#paypal')
+    const bitcoinPayment = document.querySelector('#bitcoin')
+    const creditcardPayment = document.querySelector('#credit-card')
+    paymentMethods[0].hidden = true
+    paymentMethods[1].defaultSelected = true
+    paypalPayment.hidden = true
+    bitcoinPayment.hidden = true
+
+    payment.addEventListener('change', (e) => {
+        let method = e.target.value
+        if(method === 'credit card') {
+            creditcardPayment.hidden = false
+            paypalPayment.hidden = true
+            bitcoinPayment.hidden = true
+        } else if(method === 'paypal') {
+            paypalPayment.hidden = false
+            creditcardPayment.hidden = true;
+            bitcoinPayment.hidden = true
+        } else {
+            bitcoinPayment.hidden = false
+            creditcardPayment.hidden = true
+            paypalPayment.hidden = true
+        }
+    })
+    
+}
+
+paymentInfo()
+
+// Validation functions
+
