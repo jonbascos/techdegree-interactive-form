@@ -2,11 +2,13 @@ const name = document.querySelector('#name')
 const otherJobRole = document.querySelector('option[value="other"]')
 const jobRoleSelect = document.querySelector('#title')
 const otherTitleInput = document.querySelector('#other-title')
+const p = document.createElement('p')
+let totalActivityCost = 0
 
 // console.log('working')
 
 // Set initial focus to the Name field on page load
-name.focus()
+name.focus() 
 
 // Initially hide the 'Other' job role
 otherTitleInput.hidden=true
@@ -22,6 +24,7 @@ jobRoleSelect.addEventListener('change', (e) => {
     }
 })
 
+// Function that controls what is being shown in the T-shirt info section.
 const tShirtInfo = () => {
     const designMenu = document.querySelector('#design') // design dropdown
     const colorMenu = document.querySelector('#color')// color dropdown
@@ -71,3 +74,46 @@ const tShirtInfo = () => {
 }
     
 tShirtInfo()
+
+/* 
+    This function will keep track of all activities.  If there are other workshops that happen at the same time as the workshop you chose, those workshops will not be available to choose.  It will also keep track of the cost of all of the activities you want to participate in.
+*/
+const activities = () => {
+    const activities = document.querySelector('.activities')
+    activities.appendChild(p)
+    p.innerHTML = `<h3>Total activity cost: $0</h3>`
+
+    activities.addEventListener('change', (e) => {
+        let click = e.target
+        let cost = parseInt(click.getAttribute('data-cost'))
+        let dayTime = click.getAttribute('data-day-and-time')
+        let activitiesLabel = activities.getElementsByTagName('label')
+        const activitiesInputs = activities.getElementsByTagName('input')
+        
+        // Keep track of total activity costs
+        if(click.checked) {
+            totalActivityCost += cost
+            p.innerHTML = `<h3>Total activity cost: $${totalActivityCost}</h3>`
+
+        }else {
+            totalActivityCost -= cost
+            p.innerHTML = `<h3>Total activity cost: $${totalActivityCost}</h3>`
+        }
+
+        
+        // Keep track of what activities conflict with chosen activity
+        for(let i = 0; i < activitiesInputs.length; i++) {
+            if(dayTime === activitiesInputs[i].getAttribute('data-day-and-time') && click !== activitiesInputs[i]) {
+                if(click.checked) {
+                    activitiesInputs[i].disabled = true
+                    activitiesLabel[i].style.textDecoration = 'line-through'
+                    activitiesLabel[i].style.textDecorationColor = 'red'
+                } else{
+                    activitiesInputs[i].disabled = false
+                    activitiesLabel[i].style.textDecoration = 'none'
+                }
+            }
+        }
+    })
+}
+activities()
