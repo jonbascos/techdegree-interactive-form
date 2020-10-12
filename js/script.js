@@ -2,13 +2,38 @@ const name = document.querySelector('#name')
 const otherJobRole = document.querySelector('option[value="other"]')
 const jobRoleSelect = document.querySelector('#title')
 const otherTitleInput = document.querySelector('#other-title')
-const p = document.createElement('p')
+// const p = document.createElement('p')
 let totalActivityCost = 0
-
-// console.log('working')
+let activitiesChosen = []
 
 // Set initial focus to the Name field on page load
 name.focus() 
+
+// Name Validation Error Message
+const nameErrorP = document.createElement('p')
+const nameErrorMessage = `<span style='color: red;'>Please Enter a Name</span>`
+nameErrorP.innerHTML = nameErrorMessage
+nameErrorP.className = 'nameValidationError'
+nameErrorP.style.display = 'none'
+document.querySelector('form label[for="name"]').appendChild(nameErrorP)
+
+// Email Validation Error Message
+const emailErrorP = document.createElement('p')
+const emailErrorMessage = `<span style='color: red;'>Please Enter a valid Email Address</span>`
+emailErrorP.innerHTML = emailErrorMessage
+emailErrorP.className = 'emailValidationError'
+emailErrorP.style.display = 'none'
+document.querySelector('form label[for="mail"]').appendChild(emailErrorP)
+
+// Activities Validation Error Message
+let activitiesLegend = document.querySelector('.activities legend')
+const activitiesErrorMessageP = document.createElement('p')
+activitiesErrorMessageP.innerHTML = `<span style='color: red;'>Please choose at least one Activity!</span>`
+activitiesErrorMessageP.className = 'activitiesValidationError'
+activitiesErrorMessageP.style.display = 'none'
+activitiesLegend.appendChild(activitiesErrorMessageP)
+
+
 
 // Initially hide the 'Other' job role
 otherTitleInput.hidden=true
@@ -80,8 +105,10 @@ tShirtInfo()
 */
 const activities = () => {
     const activities = document.querySelector('.activities')
-    activities.appendChild(p)
+    const p = document.createElement('p')
     p.innerHTML = `<h3>Total activity cost: $0</h3>`
+    activities.appendChild(p)
+    
 
     activities.addEventListener('change', (e) => {
         let click = e.target
@@ -92,6 +119,7 @@ const activities = () => {
         
         // Keep track of total activity costs
         if(click.checked) {
+            activitiesChosen.push(click.name)
             totalActivityCost += cost
             p.innerHTML = `<h3>Total activity cost: $${totalActivityCost}</h3>`
 
@@ -116,6 +144,7 @@ const activities = () => {
                 }
             }
         }
+        console.log(activitiesChosen)
     })
 }
 activities()
@@ -155,3 +184,67 @@ paymentInfo()
 
 // Validation functions
 
+const nameValidation = (name) => {
+    let regex = /^\D* \D*$/i
+    return regex.test(name)
+}
+
+const emailValidation = (email) => {
+    let regex = /^[^@]+@[^@.]+\.[a-z]+$/i
+    return regex.test(email)
+}
+
+const activitiesValidation = () => {
+    if(activitiesChosen < 1) {
+        document.querySelector('.activitiesValidationError').style.display = 'block'
+   } else {
+    document.querySelector('.activitiesValidationError').style.display = 'none'
+   }
+}
+
+const creditcardValidation = (cardNumber) => {
+    let regex = /^\d{4}[ -]?\d{4}[ =]?\d{4}[ -]?\d{4}$/
+    return regex.test(cardNumber)
+}
+
+const cvvValidation = (cvv) => {
+    let regex = /^\d{3}$/
+    return regex.test(cvv)
+}
+
+const validateFields = () => {
+    // Stores the results of the Validation Tests
+    let nameValidationResults = nameValidation(name.value)
+    let emailValidationResults = emailValidation(document.querySelector('#mail').value)
+    let activitiesValidationResults = activitiesValidation()
+    let creditcardValidationResults = creditcardValidation(document.querySelector('#cc-num').value)
+    let cvvValidationResults = cvvValidation(document.querySelector('#cvv').value)
+
+    // Displays Name Validation Error if needed
+    if(!nameValidationResults) {
+        document.querySelector('.nameValidationError').style.display = 'block'
+    }  else {
+        document.querySelector('.nameValidationError').style.display = 'none'
+    }
+
+    // Displays Email Validation Error if needed
+    if(!emailValidationResults) {
+        document.querySelector('.emailValidationError').style.display = 'block'
+    } else {
+        document.querySelector('.emailValidationError').style.display = 'none'
+    }
+
+
+    // console.log('nameValidationResults: ', nameValidationResults)
+    console.log('emailValidationResults: ', emailValidationResults)
+    console.log('creditcardValidationResults: ', creditcardValidationResults)
+    console.log('cvvValidationResults: ', cvvValidationResults)
+}
+
+// Submit form
+
+const form = document.querySelector('form')
+form.addEventListener('submit', (e) => {
+    e.preventDefault()
+    validateFields()
+})
