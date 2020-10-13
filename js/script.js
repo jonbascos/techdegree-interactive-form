@@ -5,6 +5,7 @@ const otherTitleInput = document.querySelector('#other-title')
 // const p = document.createElement('p')
 let totalActivityCost = 0
 let activitiesChosen = []
+let paymentType = 'credit card'
 
 // Set initial focus to the Name field on page load
 name.focus() 
@@ -32,6 +33,14 @@ activitiesErrorMessageP.innerHTML = `<span style='color: red;'>Please choose at 
 activitiesErrorMessageP.className = 'activitiesValidationError'
 activitiesErrorMessageP.style.display = 'none'
 activitiesLegend.appendChild(activitiesErrorMessageP)
+
+// Credit Card Validation Error Message
+let paymentInfoLegend = document.querySelector('#payment').previousElementSibling.previousElementSibling
+const paymentInfoErrorMessageP = document.createElement('p')
+paymentInfoErrorMessageP.innerHTML = `<span style='color: red;'>Please confirm that your credit card number, zip code, and/or CVV is correct.</span>`
+paymentInfoErrorMessageP.className = 'creditcardValidationError'
+paymentInfoErrorMessageP.style.display = 'none'
+paymentInfoLegend.appendChild(paymentInfoErrorMessageP)
 
 
 
@@ -122,15 +131,16 @@ const activities = () => {
             activitiesChosen.push(click.name)
             totalActivityCost += cost
             p.innerHTML = `<h3>Total activity cost: $${totalActivityCost}</h3>`
+        }else if(!click.checked) {
 
         }else {
             totalActivityCost -= cost
             p.innerHTML = `<h3>Total activity cost: $${totalActivityCost}</h3>`
         }
-
         
         // Keep track of what activities conflict with chosen activity
         for(let i = 0; i < activitiesInputs.length; i++) {
+
             if(dayTime === activitiesInputs[i].getAttribute('data-day-and-time') && click !== activitiesInputs[i]) {
                 if(click.checked) {
                     activitiesInputs[i].disabled = true
@@ -145,6 +155,7 @@ const activities = () => {
             }
         }
         console.log(activitiesChosen)
+        console.log(click)
     })
 }
 activities()
@@ -167,14 +178,17 @@ const paymentInfo = () => {
             creditcardPayment.hidden = false
             paypalPayment.hidden = true
             bitcoinPayment.hidden = true
+            paymentType = 'credit card'
         } else if(method === 'paypal') {
             paypalPayment.hidden = false
             creditcardPayment.hidden = true;
             bitcoinPayment.hidden = true
+            paymentType = 'paypal'
         } else {
             bitcoinPayment.hidden = false
             creditcardPayment.hidden = true
             paypalPayment.hidden = true
+            paymentType = 'bitcoin'
         }
     })
     
@@ -194,12 +208,19 @@ const emailValidation = (email) => {
     return regex.test(email)
 }
 
-const activitiesValidation = () => {
-    if(activitiesChosen < 1) {
-        document.querySelector('.activitiesValidationError').style.display = 'block'
-   } else {
-    document.querySelector('.activitiesValidationError').style.display = 'none'
-   }
+const activitiesValidation = () => {    
+    const activitiesInputsValidation = document.querySelectorAll('.activities input')
+    let numOfActivitiesChosen = 0
+    for(let i = 0; i < activitiesInputsValidation.length; i++){
+        if(activitiesInputsValidation[i].checked){
+            numOfActivitiesChosen++
+        }
+    }
+    if(numOfActivitiesChosen === 0){
+        return false
+    } else {
+        return true
+    }
 }
 
 const creditcardValidation = (cardNumber) => {
@@ -213,6 +234,7 @@ const cvvValidation = (cvv) => {
 }
 
 const validateFields = () => {
+
     // Stores the results of the Validation Tests
     let nameValidationResults = nameValidation(name.value)
     let emailValidationResults = emailValidation(document.querySelector('#mail').value)
@@ -234,11 +256,25 @@ const validateFields = () => {
         document.querySelector('.emailValidationError').style.display = 'none'
     }
 
+    // Displays Activities Validation Error if needed
+    if(!activitiesValidationResults) {
+        document.querySelector('.activitiesValidationError').style.display = 'block' 
+    } else {
+        document.querySelector('.activitiesValidationError').style.display = 'none'
+    }
 
-    // console.log('nameValidationResults: ', nameValidationResults)
-    console.log('emailValidationResults: ', emailValidationResults)
-    console.log('creditcardValidationResults: ', creditcardValidationResults)
-    console.log('cvvValidationResults: ', cvvValidationResults)
+    // Displays Credit Card Validation Error if needed
+    const payment = document.querySelector('#payment option').value
+    if(paymentType === 'credit card') {
+        if(!creditcardValidationResults || !cvvValidationResults) {
+            document.querySelector('.creditcardValidationError').style.display = 'block'
+        } else {
+            document.querySelector('.creditcardValidationError').style.display = 'none'
+        }
+    }
+    
+    // console.log('creditcardValidationResults: ', creditcardValidationResults)
+    // console.log('cvvValidationResults: ', cvvValidationResults)
 }
 
 // Submit form
@@ -248,3 +284,5 @@ form.addEventListener('submit', (e) => {
     e.preventDefault()
     validateFields()
 })
+
+console.log(document.querySelector('#payment option'))
