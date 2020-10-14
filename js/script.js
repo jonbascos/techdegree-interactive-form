@@ -2,7 +2,6 @@ const name = document.querySelector('#name')
 const otherJobRole = document.querySelector('option[value="other"]')
 const jobRoleSelect = document.querySelector('#title')
 const otherTitleInput = document.querySelector('#other-title')
-// const p = document.createElement('p')
 let totalActivityCost = 0
 let activitiesChosen = []
 let paymentType = 'credit card'
@@ -42,8 +41,6 @@ paymentInfoErrorMessageP.className = 'creditcardValidationError'
 paymentInfoErrorMessageP.style.display = 'none'
 paymentInfoLegend.appendChild(paymentInfoErrorMessageP)
 
-
-
 // Initially hide the 'Other' job role
 otherTitleInput.hidden=true
 
@@ -61,52 +58,63 @@ jobRoleSelect.addEventListener('change', (e) => {
 // Function that controls what is being shown in the T-shirt info section.
 const tShirtInfo = () => {
     const designMenu = document.querySelector('#design') // design dropdown
-    const colorMenu = document.querySelector('#color')// color dropdown
+    const colorDiv = document.querySelector('#shirt-colors')
+    const colorChoices = document.querySelector('#color')// color choices 
     const option = document.createElement('option')
+
+    // console.log('Design Menu: ', designMenu.options)
     
     // Create default 'Please choose a T-shirt theme' option in color dropdown if a T-shirt theme isn't chosen.
     option.defaultSelected = true
     option.text = 'Please choose a T-shirt theme'
-    colorMenu.appendChild(option)
-    colorMenu.disabled = true
+    colorChoices.appendChild(option)
+    colorChoices.disabled = true
+    colorDiv.style.display = 'none'
 
     // Listens for any changes to the Design dropdown menu
     designMenu.addEventListener('change', (e) => {
-        const selection = e.target.value
-        let lastColorOption = colorMenu.options.length - 1
-        if(selection !== 'Select Theme'){
-            colorMenu.disabled = false
-        } else {
-            colorMenu[lastColorOption].selected = true
-            colorMenu.disabled = true
-        }
+       let selected = (e.target.value)
+       if(selected == 'Select Theme') {
+           colorDiv.style.display = 'none'
+       }
+       
+       if(selected == 'js puns') {
+        colorDiv.style.display = 'block'
+        colorChoices.disabled = false
+           for(let i = 0; i < colorChoices.length; i++) {
+               if(colorChoices[i].text.includes('I')) {
+                   colorChoices[i].hidden = true
+               }
+               else {
+                   colorChoices[i].hidden = false
+                   console.log(i, colorChoices[i])
+                   colorChoices[3].removeAttribute('selected')
+                   colorChoices[0].defaultSelected = true
+               }
+           }
+       }
 
-        // T-shirt Color choices
-        if(selection === 'heart js') {
-            for(let i = 0; i < colorMenu.length; i++) {
-                if(colorMenu.options[i].text.includes('Puns')) {
-                    colorMenu.options[i].hidden = true
-                }
-                if(colorMenu.options[i].text.includes('♥')) {
-                    colorMenu.options[i].hidden = false
-                    colorMenu[3].defaultSelected = true
-                }
+       if(selected == 'heart js') {
+        colorDiv.style.display = 'block'
+        colorChoices.disabled = false
+        for(let i = 0; i < colorChoices.length; i++) {
+            if(colorChoices[i].text.includes('Puns')) {
+                colorChoices[i].hidden = true
             }
-        } 
-
-        if(selection === 'js puns') {
-            for(let i = 0; i < colorMenu.length; i++) {
-                if(colorMenu.options[i].text.includes('♥')) {
-                    colorMenu.options[i].hidden = true
-                } else if(colorMenu.options[i].text.includes('Puns')) {
-                    colorMenu.options[i].hidden = false
-                    colorMenu[0].defaultSelected = true
-                }
+            else {
+                colorChoices[i].hidden = false
+                console.log(i, colorChoices[i])
+                colorChoices[0].removeAttribute('selected')
+                colorChoices[3].defaultSelected = true
+            }
         }
     }
+        console.log('Color Choices: ', colorChoices)
+       console.log('selected: ', selected)
+
+
     })
-}
-    
+}  
 tShirtInfo()
 
 /* 
@@ -131,8 +139,6 @@ const activities = () => {
             activitiesChosen.push(click.name)
             totalActivityCost += cost
             p.innerHTML = `<h3>Total activity cost: $${totalActivityCost}</h3>`
-        }else if(!click.checked) {
-
         }else {
             totalActivityCost -= cost
             p.innerHTML = `<h3>Total activity cost: $${totalActivityCost}</h3>`
@@ -154,8 +160,6 @@ const activities = () => {
                 }
             }
         }
-        console.log(activitiesChosen)
-        console.log(click)
     })
 }
 activities()
@@ -193,22 +197,21 @@ const paymentInfo = () => {
     })
     
 }
-
 paymentInfo()
 
 // Validation functions
 
-const nameValidation = (name) => {
+const isNameValid = (name) => {
     let regex = /^\D* \D*$/i
     return regex.test(name)
 }
 
-const emailValidation = (email) => {
+const isEmailValid = (email) => {
     let regex = /^[^@]+@[^@.]+\.[a-z]+$/i
     return regex.test(email)
 }
 
-const activitiesValidation = () => {    
+const isActivitiesValid = () => {    
     const activitiesInputsValidation = document.querySelectorAll('.activities input')
     let numOfActivitiesChosen = 0
     for(let i = 0; i < activitiesInputsValidation.length; i++){
@@ -223,59 +226,42 @@ const activitiesValidation = () => {
     }
 }
 
-const creditcardValidation = (cardNumber) => {
+const isCreditCardValid = (cardNumber) => {
     let regex = /^\d{4}[ -]?\d{4}[ =]?\d{4}[ -]?\d{4}$/
     return regex.test(cardNumber)
 }
 
-const cvvValidation = (cvv) => {
+const isCVVValid = (cvv) => {
     let regex = /^\d{3}$/
     return regex.test(cvv)
 }
 
 const validateFields = () => {
 
-    // Stores the results of the Validation Tests
-    let nameValidationResults = nameValidation(name.value)
-    let emailValidationResults = emailValidation(document.querySelector('#mail').value)
-    let activitiesValidationResults = activitiesValidation()
-    let creditcardValidationResults = creditcardValidation(document.querySelector('#cc-num').value)
-    let cvvValidationResults = cvvValidation(document.querySelector('#cvv').value)
-
     // Displays Name Validation Error if needed
-    if(!nameValidationResults) {
-        document.querySelector('.nameValidationError').style.display = 'block'
-    }  else {
-        document.querySelector('.nameValidationError').style.display = 'none'
-    }
+    isNameValid(name.value) ? document.querySelector('.nameValidationError').style.display = 'none' : document.querySelector('.nameValidationError').style.display = 'inherit'
 
     // Displays Email Validation Error if needed
-    if(!emailValidationResults) {
-        document.querySelector('.emailValidationError').style.display = 'block'
-    } else {
-        document.querySelector('.emailValidationError').style.display = 'none'
-    }
+    isEmailValid(document.querySelector('#mail').value) ? document.querySelector('.emailValidationError').style.display = 'none' : document.querySelector('.emailValidationError').style.display = 'inherit'
 
     // Displays Activities Validation Error if needed
-    if(!activitiesValidationResults) {
-        document.querySelector('.activitiesValidationError').style.display = 'block' 
-    } else {
-        document.querySelector('.activitiesValidationError').style.display = 'none'
-    }
+    isActivitiesValid() ? document.querySelector('.activitiesValidationError').style.display = 'none' : document.querySelector('.activitiesValidationError').style.display = 'inherit' 
 
     // Displays Credit Card Validation Error if needed
     const payment = document.querySelector('#payment option').value
     if(paymentType === 'credit card') {
-        if(!creditcardValidationResults || !cvvValidationResults) {
-            document.querySelector('.creditcardValidationError').style.display = 'block'
-        } else {
-            document.querySelector('.creditcardValidationError').style.display = 'none'
-        }
+        (isCreditCardValid(document.querySelector('#cc-num').value) || isCVVValid(document.querySelector('#cvv').value)) ? document.querySelector('.creditcardValidationError').style.display = 'none' : document.querySelector('.creditcardValidationError').style.display = 'inherit'
     }
-    
-    // console.log('creditcardValidationResults: ', creditcardValidationResults)
-    // console.log('cvvValidationResults: ', cvvValidationResults)
 }
+
+// Validates Email as the user types
+document.querySelector('#mail').addEventListener('input', e => {
+    let emailValue = document.querySelector('#mail').value
+    let emailValid = isEmailValid(e.target.value)
+    emailValid ? document.querySelector('.emailValidationError').style.display = 'none' : document.querySelector('.emailValidationError').style.display = 'inherit'
+    
+    emailValue.length === 0 ? document.querySelector('.emailValidationError').style.display = 'none' : null
+})
 
 // Submit form
 
@@ -284,5 +270,3 @@ form.addEventListener('submit', (e) => {
     e.preventDefault()
     validateFields()
 })
-
-console.log(document.querySelector('#payment option'))
