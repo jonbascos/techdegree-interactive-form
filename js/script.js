@@ -1,13 +1,23 @@
-const name = document.querySelector('#name')
 const otherJobRole = document.querySelector('option[value="other"]')
-const jobRoleSelect = document.querySelector('#title')
 const otherTitleInput = document.querySelector('#other-title')
+let activitiesLegend = document.querySelector('.activities legend')
+let paymentInfoLegend = document.querySelector('#payment').previousElementSibling.previousElementSibling
+const creditCardNumberInput = document.querySelector('#cc-num')
+const creditCardCVVInput = document.querySelector('#cvv')
+const designMenu = document.querySelector('#design') // design dropdown
+const colorDiv = document.querySelector('#shirt-colors')
+const colorChoices = document.querySelector('#color')// color choices 
+const activities = document.querySelector('.activities')
+const payment = document.querySelector('#payment')
+const paymentMethods = document.querySelectorAll('#payment option')
+const paypalPayment = document.querySelector('#paypal')
+const bitcoinPayment = document.querySelector('#bitcoin')
+const creditcardPayment = document.querySelector('#credit-card')
 let totalActivityCost = 0
 let activitiesChosen = []
-let paymentType = 'credit card'
 
 // Set initial focus to the Name field on page load
-name.focus() 
+document.querySelector('#name').focus() 
 
 // Name Validation Error Message
 const nameErrorP = document.createElement('p')
@@ -26,7 +36,6 @@ emailErrorP.style.display = 'none'
 document.querySelector('form label[for="mail"]').appendChild(emailErrorP)
 
 // Activities Validation Error Message
-let activitiesLegend = document.querySelector('.activities legend')
 const activitiesErrorMessageP = document.createElement('p')
 activitiesErrorMessageP.innerHTML = `<span style='color: red;'>Please choose at least one Activity!</span>`
 activitiesErrorMessageP.className = 'activitiesValidationError'
@@ -34,18 +43,28 @@ activitiesErrorMessageP.style.display = 'none'
 activitiesLegend.appendChild(activitiesErrorMessageP)
 
 // Credit Card Validation Error Message
-let paymentInfoLegend = document.querySelector('#payment').previousElementSibling.previousElementSibling
+
 const paymentInfoErrorMessageP = document.createElement('p')
 paymentInfoErrorMessageP.innerHTML = `<span style='color: red;'>Please confirm that your credit card number, zip code, and/or CVV is correct.</span>`
 paymentInfoErrorMessageP.className = 'creditcardValidationError'
 paymentInfoErrorMessageP.style.display = 'none'
 paymentInfoLegend.appendChild(paymentInfoErrorMessageP)
 
+const creditCardNumberInputP = document.createElement('p')
+creditCardNumberInputP.className = 'creditCardNumberInputP'
+creditCardNumberInputP.innerHTML = `<span style='color: red; font-size:11pt;'>Please enter a valid credit card number (10-14 digits) </span>`
+creditCardNumberInput.previousElementSibling.appendChild(creditCardNumberInputP)
+
+const cvvNumberInputP = document.createElement('p')
+cvvNumberInputP.className = 'cvvNumberInputP'
+cvvNumberInputP.innerHTML = `<span style='color: red; font-size:11pt;'>Please enter a valid 3 digit CVV </span>`
+creditCardCVVInput.previousElementSibling.appendChild(cvvNumberInputP)
+
 // Initially hide the 'Other' job role
 otherTitleInput.hidden=true
 
 // Only display the "other-title" input if 'Other' is selected in "Job Role"
-jobRoleSelect.addEventListener('change', (e) => {
+document.querySelector('#title').addEventListener('change', (e) => {
     let jobRole = e.target.value
     if(jobRole === 'other') {
         otherTitleInput.hidden=false
@@ -57,13 +76,8 @@ jobRoleSelect.addEventListener('change', (e) => {
 
 // Function that controls what is being shown in the T-shirt info section.
 const tShirtInfo = () => {
-    const designMenu = document.querySelector('#design') // design dropdown
-    const colorDiv = document.querySelector('#shirt-colors')
-    const colorChoices = document.querySelector('#color')// color choices 
-    const option = document.createElement('option')
-
-    // console.log('Design Menu: ', designMenu.options)
     
+    const option = document.createElement('option')    
     // Create default 'Please choose a T-shirt theme' option in color dropdown if a T-shirt theme isn't chosen.
     option.defaultSelected = true
     option.text = 'Please choose a T-shirt theme'
@@ -109,10 +123,6 @@ const tShirtInfo = () => {
             }
         }
     }
-        console.log('Color Choices: ', colorChoices)
-       console.log('selected: ', selected)
-
-
     })
 }  
 tShirtInfo()
@@ -120,8 +130,7 @@ tShirtInfo()
 /* 
     This function will keep track of all activities.  If there are other workshops that happen at the same time as the workshop you chose, those workshops will not be available to choose.  It will also keep track of the cost of all of the activities you want to participate in.
 */
-const activities = () => {
-    const activities = document.querySelector('.activities')
+const registerActivities = () => {
     const p = document.createElement('p')
     p.innerHTML = `<h3>Total activity cost: $0</h3>`
     activities.appendChild(p)
@@ -162,37 +171,39 @@ const activities = () => {
         }
     })
 }
-activities()
+registerActivities()
 
 // This function will handle the UI for the payment info.  It will show you only the information that is needed for that specific payment type.
 const paymentInfo = () => {
-    const payment = document.querySelector('#payment')
-    const paymentMethods = document.querySelectorAll('#payment option')
-    const paypalPayment = document.querySelector('#paypal')
-    const bitcoinPayment = document.querySelector('#bitcoin')
-    const creditcardPayment = document.querySelector('#credit-card')
     paymentMethods[0].hidden = true
     paymentMethods[1].defaultSelected = true
     paypalPayment.hidden = true
     bitcoinPayment.hidden = true
+    document.querySelector('.creditCardNumberInputP').style.display = 'none' 
+    document.querySelector('.cvvNumberInputP').style.display = 'none' 
+    document.querySelector('.creditcardValidationError').style.display = 'none' 
 
     payment.addEventListener('change', (e) => {
         let method = e.target.value
-        if(method === 'credit card') {
-            creditcardPayment.hidden = false
-            paypalPayment.hidden = true
-            bitcoinPayment.hidden = true
-            paymentType = 'credit card'
-        } else if(method === 'paypal') {
+        console.log(method)
+        creditcardPayment.hidden = false
+        paypalPayment.hidden = true
+        bitcoinPayment.hidden = true
+        if(method === 'paypal') {
             paypalPayment.hidden = false
             creditcardPayment.hidden = true;
             bitcoinPayment.hidden = true
-            paymentType = 'paypal'
-        } else {
+            document.querySelector('.creditcardValidationError').style.display = 'none' 
+           
+        } else if(method === 'bitcoin') {
             bitcoinPayment.hidden = false
             creditcardPayment.hidden = true
             paypalPayment.hidden = true
-            paymentType = 'bitcoin'
+            document.querySelector('.creditcardValidationError').style.display = 'none' 
+        } else {
+            paypalPayment.hidden = true
+            creditcardPayment.hidden = false;
+            bitcoinPayment.hidden = true
         }
     })
     
@@ -248,10 +259,9 @@ const validateFields = () => {
     isActivitiesValid() ? document.querySelector('.activitiesValidationError').style.display = 'none' : document.querySelector('.activitiesValidationError').style.display = 'inherit' 
 
     // Displays Credit Card Validation Error if needed
-    const payment = document.querySelector('#payment option').value
-    if(paymentType === 'credit card') {
-        (isCreditCardValid(document.querySelector('#cc-num').value) || isCVVValid(document.querySelector('#cvv').value)) ? document.querySelector('.creditcardValidationError').style.display = 'none' : document.querySelector('.creditcardValidationError').style.display = 'inherit'
-    }
+        if(payment.options == payment.options[1]) {
+            isCreditCardValid() || isCVVValid() ? document.querySelector('.creditcardValidationError').style.display = 'none' : document.querySelector('.creditcardValidationError').style.display = 'inherit'
+        }
 }
 
 // Validates Email as the user types
@@ -262,6 +272,26 @@ document.querySelector('#mail').addEventListener('input', e => {
     
     emailValue.length === 0 ? document.querySelector('.emailValidationError').style.display = 'none' : null
 })
+
+// Validates Credit Card Number as the user types
+document.querySelector('#cc-num').addEventListener('input', (e) => {
+    let ccNumberValue = document.querySelector('#cc-num').value
+    let ccNumberInput = e.target.value
+     
+     isCreditCardValid(ccNumberInput) ? document.querySelector('.creditCardNumberInputP').style.display = 'none' : document.querySelector('.creditCardNumberInputP').style.display = 'block'
+
+     ccNumberValue.length === 0 ? document.querySelector('.creditCardNumberInputP').style.display = 'none' : null
+ })
+
+ // Validates the CVV as the user types
+ document.querySelector('#cvv').addEventListener('input', (e) => {
+     let cvvValue = document.querySelector('#cvv').value
+     let cvvInput = e.target.value
+
+      isCVVValid(cvvInput) ? document.querySelector('.cvvNumberInputP').style.display = 'none' : document.querySelector('.cvvNumberInputP').style.display = 'block'
+
+      cvvValue.length === 0 ? document.querySelector('.cvvNumberInputP').style.display = 'none' : null
+  })
 
 // Submit form
 
