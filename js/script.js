@@ -190,23 +190,25 @@ const paymentInfo = () => {
         paypalPayment.hidden = true
         bitcoinPayment.hidden = true
         if(method === 'paypal') {
+            paymentMethods[1].removeAttribute('selected')
             paypalPayment.hidden = false
             creditcardPayment.hidden = true;
             bitcoinPayment.hidden = true
             document.querySelector('.creditcardValidationError').style.display = 'none' 
            
         } else if(method === 'bitcoin') {
+            paymentMethods[1].removeAttribute('selected')
             bitcoinPayment.hidden = false
             creditcardPayment.hidden = true
             paypalPayment.hidden = true
             document.querySelector('.creditcardValidationError').style.display = 'none' 
-        } else {
+        } else if(method === 'credit card') {
+            paymentMethods[1].defaultSelected = true
             paypalPayment.hidden = true
             creditcardPayment.hidden = false;
             bitcoinPayment.hidden = true
         }
     })
-    
 }
 paymentInfo()
 
@@ -242,12 +244,20 @@ const isCreditCardValid = (cardNumber) => {
     return regex.test(cardNumber)
 }
 
+const isZipcodeValid = (zipcode) => {
+    let regex = /^\d{5}$/
+    return regex.test(zipcode)
+}
+
 const isCVVValid = (cvv) => {
     let regex = /^\d{3}$/
     return regex.test(cvv)
 }
 
 const validateFields = () => {
+    let ccNumber = document.querySelector('#cc-num').value
+    let zipcode = document.querySelector('#zip').value
+    let cvv = document.querySelector('#cvv').value
 
     // Displays Name Validation Error if needed
     isNameValid(name.value) ? document.querySelector('.nameValidationError').style.display = 'none' : document.querySelector('.nameValidationError').style.display = 'inherit'
@@ -259,9 +269,15 @@ const validateFields = () => {
     isActivitiesValid() ? document.querySelector('.activitiesValidationError').style.display = 'none' : document.querySelector('.activitiesValidationError').style.display = 'inherit' 
 
     // Displays Credit Card Validation Error if needed
-        if(payment.options == payment.options[1]) {
-            isCreditCardValid() || isCVVValid() ? document.querySelector('.creditcardValidationError').style.display = 'none' : document.querySelector('.creditcardValidationError').style.display = 'inherit'
-        }
+    if(document.querySelectorAll('#payment option')[1].selected) {
+        console.log('running')
+    isCreditCardValid(ccNumber) && isCVVValid(cvv) && isZipcodeValid(zipcode) ? document.querySelector('.creditcardValidationError').style.display = 'none' : document.querySelector('.creditcardValidationError').style.display = 'inherit'
+
+    
+    console.log(isCreditCardValid(document.querySelector('#cc-num').value))
+    console.log(isCVVValid(document.querySelector('#cvv').value))
+    console.log(isZipcodeValid(document.querySelector('#zip').value))
+    }
 }
 
 // Validates Email as the user types
@@ -300,3 +316,4 @@ form.addEventListener('submit', (e) => {
     e.preventDefault()
     validateFields()
 })
+
