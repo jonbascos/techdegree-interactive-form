@@ -4,6 +4,7 @@ let activitiesLegend = document.querySelector('.activities legend')
 let paymentInfoLegend = document.querySelector('#payment').previousElementSibling.previousElementSibling
 const creditCardNumberInput = document.querySelector('#cc-num')
 const creditCardCVVInput = document.querySelector('#cvv')
+const creditCardZipcodeInput = document.querySelector('#zip')
 const designMenu = document.querySelector('#design') // design dropdown
 const colorDiv = document.querySelector('#shirt-colors')
 const colorChoices = document.querySelector('#color')// color choices 
@@ -43,7 +44,6 @@ activitiesErrorMessageP.style.display = 'none'
 activitiesLegend.appendChild(activitiesErrorMessageP)
 
 // Credit Card Validation Error Message
-
 const paymentInfoErrorMessageP = document.createElement('p')
 paymentInfoErrorMessageP.innerHTML = `<span style='color: red;'>Please confirm that your credit card number, zip code, and/or CVV is correct.</span>`
 paymentInfoErrorMessageP.className = 'creditcardValidationError'
@@ -59,6 +59,11 @@ const cvvNumberInputP = document.createElement('p')
 cvvNumberInputP.className = 'cvvNumberInputP'
 cvvNumberInputP.innerHTML = `<span style='color: red; font-size:11pt;'>Please enter a valid 3 digit CVV </span>`
 creditCardCVVInput.previousElementSibling.appendChild(cvvNumberInputP)
+
+const zipCodeInputP = document.createElement('p')
+zipCodeInputP.className = 'zipCodeInputP'
+zipCodeInputP.innerHTML = `<span style='color: red; font-size:11pt;'>Please enter a valid 5 digit zipcode </span>`
+creditCardZipcodeInput.previousElementSibling.appendChild(zipCodeInputP)
 
 // Initially hide the 'Other' job role
 otherTitleInput.hidden=true
@@ -182,10 +187,10 @@ const paymentInfo = () => {
     document.querySelector('.creditCardNumberInputP').style.display = 'none' 
     document.querySelector('.cvvNumberInputP').style.display = 'none' 
     document.querySelector('.creditcardValidationError').style.display = 'none' 
+    document.querySelector('.zipCodeInputP').style.display = 'none'
 
     payment.addEventListener('change', (e) => {
         let method = e.target.value
-        console.log(method)
         creditcardPayment.hidden = false
         paypalPayment.hidden = true
         bitcoinPayment.hidden = true
@@ -270,13 +275,7 @@ const validateFields = () => {
 
     // Displays Credit Card Validation Error if needed
     if(document.querySelectorAll('#payment option')[1].selected) {
-        console.log('running')
     isCreditCardValid(ccNumber) && isCVVValid(cvv) && isZipcodeValid(zipcode) ? document.querySelector('.creditcardValidationError').style.display = 'none' : document.querySelector('.creditcardValidationError').style.display = 'inherit'
-
-    
-    console.log(isCreditCardValid(document.querySelector('#cc-num').value))
-    console.log(isCVVValid(document.querySelector('#cvv').value))
-    console.log(isZipcodeValid(document.querySelector('#zip').value))
     }
 }
 
@@ -309,10 +308,19 @@ document.querySelector('#cc-num').addEventListener('input', (e) => {
       cvvValue.length === 0 ? document.querySelector('.cvvNumberInputP').style.display = 'none' : null
   })
 
-// Submit form
+  // Validates the ZipCode as the user types
+document.querySelector('#zip').addEventListener('input', (e) => {
+    let zipcodeValue = document.querySelector('#zip').value
+    let zipcodeInput = e.target.value
 
-const form = document.querySelector('form')
-form.addEventListener('submit', (e) => {
+    isZipcodeValid(zipcodeInput) ? document.querySelector('.zipCodeInputP').style.display = 'none' : document.querySelector('.zipCodeInputP').style.display = 'block'
+
+    zipcodeValue.length === 0 ? document.querySelector('.zipCodeInputP').style.display = 'none' : null
+})
+    
+
+// Submit form
+document.querySelector('form').addEventListener('submit', (e) => {
     e.preventDefault()
     validateFields()
 })
