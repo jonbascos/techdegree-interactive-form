@@ -265,7 +265,7 @@ const validateFields = () => {
     let cvv = document.querySelector('#cvv').value
 
     // Displays Name Validation Error if needed
-    isNameValid(name.value) ? document.querySelector('.nameValidationError').style.display = 'none' : document.querySelector('.nameValidationError').style.display = 'inherit'
+    isNameValid(document.querySelector('#name'). value) ? document.querySelector('.nameValidationError').style.display = 'none' : document.querySelector('.nameValidationError').style.display = 'inherit'
 
     // Displays Email Validation Error if needed
     isEmailValid(document.querySelector('#mail').value) ? document.querySelector('.emailValidationError').style.display = 'none' : document.querySelector('.emailValidationError').style.display = 'inherit'
@@ -279,23 +279,23 @@ const validateFields = () => {
     }
 }
 
-// Validates Email as the user types
-document.querySelector('#mail').addEventListener('input', e => {
-    let emailValue = document.querySelector('#mail').value
-    let emailValid = isEmailValid(e.target.value)
-    emailValid ? document.querySelector('.emailValidationError').style.display = 'none' : document.querySelector('.emailValidationError').style.display = 'inherit'
-    
-    emailValue.length === 0 ? document.querySelector('.emailValidationError').style.display = 'none' : null
+    // Validates Email as the user types
+    document.querySelector('#mail').addEventListener('input', e => {
+        let emailValue = document.querySelector('#mail').value
+        let emailValid = isEmailValid(e.target.value)
+        emailValid ? document.querySelector('.emailValidationError').style.display = 'none' : document.querySelector('.emailValidationError').style.display = 'inherit'
+        
+        emailValue.length === 0 ? document.querySelector('.emailValidationError').style.display = 'none' : null
 })
 
-// Validates Credit Card Number as the user types
-document.querySelector('#cc-num').addEventListener('input', (e) => {
-    let ccNumberValue = document.querySelector('#cc-num').value
-    let ccNumberInput = e.target.value
-     
-     isCreditCardValid(ccNumberInput) ? document.querySelector('.creditCardNumberInputP').style.display = 'none' : document.querySelector('.creditCardNumberInputP').style.display = 'block'
+    // Validates Credit Card Number as the user types
+    document.querySelector('#cc-num').addEventListener('input', (e) => {
+        let ccNumberValue = document.querySelector('#cc-num').value
+        let ccNumberInput = e.target.value
+        
+        isCreditCardValid(ccNumberInput) ? document.querySelector('.creditCardNumberInputP').style.display = 'none' : document.querySelector('.creditCardNumberInputP').style.display = 'block'
 
-     ccNumberValue.length === 0 ? document.querySelector('.creditCardNumberInputP').style.display = 'none' : null
+        ccNumberValue.length === 0 ? document.querySelector('.creditCardNumberInputP').style.display = 'none' : null
  })
 
  // Validates the CVV as the user types
