@@ -4,6 +4,7 @@ let activitiesLegend = document.querySelector('.activities legend')
 let paymentInfoLegend = document.querySelector('#payment').previousElementSibling.previousElementSibling
 const creditCardNumberInput = document.querySelector('#cc-num')
 const creditCardCVVInput = document.querySelector('#cvv')
+const creditCardZipcodeInput = document.querySelector('#zip')
 const designMenu = document.querySelector('#design') // design dropdown
 const colorDiv = document.querySelector('#shirt-colors')
 const colorChoices = document.querySelector('#color')// color choices 
@@ -43,7 +44,6 @@ activitiesErrorMessageP.style.display = 'none'
 activitiesLegend.appendChild(activitiesErrorMessageP)
 
 // Credit Card Validation Error Message
-
 const paymentInfoErrorMessageP = document.createElement('p')
 paymentInfoErrorMessageP.innerHTML = `<span style='color: red;'>Please confirm that your credit card number, zip code, and/or CVV is correct.</span>`
 paymentInfoErrorMessageP.className = 'creditcardValidationError'
@@ -59,6 +59,11 @@ const cvvNumberInputP = document.createElement('p')
 cvvNumberInputP.className = 'cvvNumberInputP'
 cvvNumberInputP.innerHTML = `<span style='color: red; font-size:11pt;'>Please enter a valid 3 digit CVV </span>`
 creditCardCVVInput.previousElementSibling.appendChild(cvvNumberInputP)
+
+const zipCodeInputP = document.createElement('p')
+zipCodeInputP.className = 'zipCodeInputP'
+zipCodeInputP.innerHTML = `<span style='color: red; font-size:11pt;'>Please enter a valid 5 digit zipcode </span>`
+creditCardZipcodeInput.previousElementSibling.appendChild(zipCodeInputP)
 
 // Initially hide the 'Other' job role
 otherTitleInput.hidden=true
@@ -101,7 +106,6 @@ const tShirtInfo = () => {
                }
                else {
                    colorChoices[i].hidden = false
-                   console.log(i, colorChoices[i])
                    colorChoices[3].removeAttribute('selected')
                    colorChoices[0].defaultSelected = true
                }
@@ -117,7 +121,6 @@ const tShirtInfo = () => {
             }
             else {
                 colorChoices[i].hidden = false
-                console.log(i, colorChoices[i])
                 colorChoices[0].removeAttribute('selected')
                 colorChoices[3].defaultSelected = true
             }
@@ -182,31 +185,33 @@ const paymentInfo = () => {
     document.querySelector('.creditCardNumberInputP').style.display = 'none' 
     document.querySelector('.cvvNumberInputP').style.display = 'none' 
     document.querySelector('.creditcardValidationError').style.display = 'none' 
+    document.querySelector('.zipCodeInputP').style.display = 'none'
 
     payment.addEventListener('change', (e) => {
         let method = e.target.value
-        console.log(method)
         creditcardPayment.hidden = false
         paypalPayment.hidden = true
         bitcoinPayment.hidden = true
         if(method === 'paypal') {
+            paymentMethods[1].removeAttribute('selected')
             paypalPayment.hidden = false
             creditcardPayment.hidden = true;
             bitcoinPayment.hidden = true
             document.querySelector('.creditcardValidationError').style.display = 'none' 
            
         } else if(method === 'bitcoin') {
+            paymentMethods[1].removeAttribute('selected')
             bitcoinPayment.hidden = false
             creditcardPayment.hidden = true
             paypalPayment.hidden = true
             document.querySelector('.creditcardValidationError').style.display = 'none' 
-        } else {
+        } else if(method === 'credit card') {
+            paymentMethods[1].defaultSelected = true
             paypalPayment.hidden = true
             creditcardPayment.hidden = false;
             bitcoinPayment.hidden = true
         }
     })
-    
 }
 paymentInfo()
 
@@ -242,15 +247,23 @@ const isCreditCardValid = (cardNumber) => {
     return regex.test(cardNumber)
 }
 
+const isZipcodeValid = (zipcode) => {
+    let regex = /^\d{5}$/
+    return regex.test(zipcode)
+}
+
 const isCVVValid = (cvv) => {
     let regex = /^\d{3}$/
     return regex.test(cvv)
 }
 
 const validateFields = () => {
+    let ccNumber = document.querySelector('#cc-num').value
+    let zipcode = document.querySelector('#zip').value
+    let cvv = document.querySelector('#cvv').value
 
     // Displays Name Validation Error if needed
-    isNameValid(name.value) ? document.querySelector('.nameValidationError').style.display = 'none' : document.querySelector('.nameValidationError').style.display = 'inherit'
+    isNameValid(document.querySelector('#name'). value) ? document.querySelector('.nameValidationError').style.display = 'none' : document.querySelector('.nameValidationError').style.display = 'inherit'
 
     // Displays Email Validation Error if needed
     isEmailValid(document.querySelector('#mail').value) ? document.querySelector('.emailValidationError').style.display = 'none' : document.querySelector('.emailValidationError').style.display = 'inherit'
@@ -259,28 +272,37 @@ const validateFields = () => {
     isActivitiesValid() ? document.querySelector('.activitiesValidationError').style.display = 'none' : document.querySelector('.activitiesValidationError').style.display = 'inherit' 
 
     // Displays Credit Card Validation Error if needed
-        if(payment.options == payment.options[1]) {
-            isCreditCardValid() || isCVVValid() ? document.querySelector('.creditcardValidationError').style.display = 'none' : document.querySelector('.creditcardValidationError').style.display = 'inherit'
-        }
+    if(document.querySelectorAll('#payment option')[1].selected) {
+    isCreditCardValid(ccNumber) && isCVVValid(cvv) && isZipcodeValid(zipcode) ? document.querySelector('.creditcardValidationError').style.display = 'none' : document.querySelector('.creditcardValidationError').style.display = 'inherit'
+    }
 }
 
-// Validates Email as the user types
-document.querySelector('#mail').addEventListener('input', e => {
-    let emailValue = document.querySelector('#mail').value
-    let emailValid = isEmailValid(e.target.value)
-    emailValid ? document.querySelector('.emailValidationError').style.display = 'none' : document.querySelector('.emailValidationError').style.display = 'inherit'
-    
-    emailValue.length === 0 ? document.querySelector('.emailValidationError').style.display = 'none' : null
+    // Validates Name as the user types
+    document.querySelector('#name').addEventListener('input', e => {
+        let nameValue = document.querySelector('#name').value
+        let nameValid = isNameValid(e.target.value)
+        nameValid ? document.querySelector('.nameValidationError').style.display = 'none' : document.querySelector('.nameValidationError').style.display = 'inherit'
+        
+        nameValue.length === 0 ? document.querySelector('.nameValidationError').style.display = 'none' : null
 })
 
-// Validates Credit Card Number as the user types
-document.querySelector('#cc-num').addEventListener('input', (e) => {
-    let ccNumberValue = document.querySelector('#cc-num').value
-    let ccNumberInput = e.target.value
-     
-     isCreditCardValid(ccNumberInput) ? document.querySelector('.creditCardNumberInputP').style.display = 'none' : document.querySelector('.creditCardNumberInputP').style.display = 'block'
+    // Validates Email as the user types
+    document.querySelector('#mail').addEventListener('input', e => {
+        let emailValue = document.querySelector('#mail').value
+        let emailValid = isEmailValid(e.target.value)
+        emailValid ? document.querySelector('.emailValidationError').style.display = 'none' : document.querySelector('.emailValidationError').style.display = 'inherit'
+        
+        emailValue.length === 0 ? document.querySelector('.emailValidationError').style.display = 'none' : null
+})
 
-     ccNumberValue.length === 0 ? document.querySelector('.creditCardNumberInputP').style.display = 'none' : null
+    // Validates Credit Card Number as the user types
+    document.querySelector('#cc-num').addEventListener('input', (e) => {
+        let ccNumberValue = document.querySelector('#cc-num').value
+        let ccNumberInput = e.target.value
+        
+        isCreditCardValid(ccNumberInput) ? document.querySelector('.creditCardNumberInputP').style.display = 'none' : document.querySelector('.creditCardNumberInputP').style.display = 'block'
+
+        ccNumberValue.length === 0 ? document.querySelector('.creditCardNumberInputP').style.display = 'none' : null
  })
 
  // Validates the CVV as the user types
@@ -293,10 +315,41 @@ document.querySelector('#cc-num').addEventListener('input', (e) => {
       cvvValue.length === 0 ? document.querySelector('.cvvNumberInputP').style.display = 'none' : null
   })
 
-// Submit form
+  // Validates the ZipCode as the user types
+document.querySelector('#zip').addEventListener('input', (e) => {
+    let zipcodeValue = document.querySelector('#zip').value
+    let zipcodeInput = e.target.value
 
-const form = document.querySelector('form')
-form.addEventListener('submit', (e) => {
-    e.preventDefault()
-    validateFields()
+    isZipcodeValid(zipcodeInput) ? document.querySelector('.zipCodeInputP').style.display = 'none' : document.querySelector('.zipCodeInputP').style.display = 'block'
+
+    zipcodeValue.length === 0 ? document.querySelector('.zipCodeInputP').style.display = 'none' : null
+})
+    
+
+// Submit form - Form will refresh to a default form if submit was successful.  Otherwise, it will show error messages
+
+document.querySelector('form').addEventListener('submit', (e) => {
+    const name = document.querySelector('#name').value
+    const email = document.querySelector('#mail').value
+    const ccNumber = document.querySelector('#cc-num').value
+    const zipcode = document.querySelector('#zip').value
+    const cvv = document.querySelector('#cvv').value
+
+    // Will run if the payment method was Credit Card
+    if(document.querySelectorAll('#payment option')[1].selected) {
+        if(isNameValid(name) && isEmailValid(email) && isActivitiesValid() && isCreditCardValid(ccNumber) && isZipcodeValid(zipcode) && isCVVValid(cvv)) {
+            validateFields()
+        } else {
+            validateFields()
+            e.preventDefault()
+        }
+    // Will run for payment methods other than Credit Card
+    } else {
+        if(isNameValid(name) && isEmailValid(email) && isActivitiesValid())  {
+            validateFields()
+        } else {
+            validateFields()
+            e.preventDefault()
+        }
+    }
 })
