@@ -277,6 +277,7 @@ const validateFields = () => {
     }
 }
 
+<<<<<<< HEAD
     // Validates Name as the user types
     document.querySelector('#name').addEventListener('input', e => {
         let nameValue = document.querySelector('#name').value
@@ -286,6 +287,8 @@ const validateFields = () => {
         nameValue.length === 0 ? document.querySelector('.nameValidationError').style.display = 'none' : null
 })
 
+=======
+>>>>>>> 510393e3d1d81ad2a00b37cdf251aa234e8c4d97
     // Validates Email as the user types
     document.querySelector('#mail').addEventListener('input', e => {
         let emailValue = document.querySelector('#mail').value
@@ -321,6 +324,7 @@ document.querySelector('#zip').addEventListener('input', (e) => {
     let zipcodeInput = e.target.value
 
     isZipcodeValid(zipcodeInput) ? document.querySelector('.zipCodeInputP').style.display = 'none' : document.querySelector('.zipCodeInputP').style.display = 'block'
+<<<<<<< HEAD
 
     zipcodeValue.length === 0 ? document.querySelector('.zipCodeInputP').style.display = 'none' : null
 })
@@ -353,3 +357,16 @@ document.querySelector('form').addEventListener('submit', (e) => {
         }
     }
 })
+=======
+
+    zipcodeValue.length === 0 ? document.querySelector('.zipCodeInputP').style.display = 'none' : null
+})
+    
+
+// Submit form
+document.querySelector('form').addEventListener('submit', (e) => {
+    e.preventDefault()
+    validateFields()
+})
+
+>>>>>>> 510393e3d1d81ad2a00b37cdf251aa234e8c4d97
