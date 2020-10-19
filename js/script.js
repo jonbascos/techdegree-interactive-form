@@ -106,7 +106,6 @@ const tShirtInfo = () => {
                }
                else {
                    colorChoices[i].hidden = false
-                   console.log(i, colorChoices[i])
                    colorChoices[3].removeAttribute('selected')
                    colorChoices[0].defaultSelected = true
                }
@@ -122,7 +121,6 @@ const tShirtInfo = () => {
             }
             else {
                 colorChoices[i].hidden = false
-                console.log(i, colorChoices[i])
                 colorChoices[0].removeAttribute('selected')
                 colorChoices[3].defaultSelected = true
             }
@@ -279,6 +277,15 @@ const validateFields = () => {
     }
 }
 
+    // Validates Name as the user types
+    document.querySelector('#name').addEventListener('input', e => {
+        let nameValue = document.querySelector('#name').value
+        let nameValid = isNameValid(e.target.value)
+        nameValid ? document.querySelector('.nameValidationError').style.display = 'none' : document.querySelector('.nameValidationError').style.display = 'inherit'
+        
+        nameValue.length === 0 ? document.querySelector('.nameValidationError').style.display = 'none' : null
+})
+
     // Validates Email as the user types
     document.querySelector('#mail').addEventListener('input', e => {
         let emailValue = document.querySelector('#mail').value
@@ -319,9 +326,30 @@ document.querySelector('#zip').addEventListener('input', (e) => {
 })
     
 
-// Submit form
-document.querySelector('form').addEventListener('submit', (e) => {
-    e.preventDefault()
-    validateFields()
-})
+// Submit form - Form will refresh to a default form if submit was successful.  Otherwise, it will show error messages
 
+document.querySelector('form').addEventListener('submit', (e) => {
+    const name = document.querySelector('#name').value
+    const email = document.querySelector('#mail').value
+    const ccNumber = document.querySelector('#cc-num').value
+    const zipcode = document.querySelector('#zip').value
+    const cvv = document.querySelector('#cvv').value
+
+    // Will run if the payment method was Credit Card
+    if(document.querySelectorAll('#payment option')[1].selected) {
+        if(isNameValid(name) && isEmailValid(email) && isActivitiesValid() && isCreditCardValid(ccNumber) && isZipcodeValid(zipcode) && isCVVValid(cvv)) {
+            validateFields()
+        } else {
+            validateFields()
+            e.preventDefault()
+        }
+    // Will run for payment methods other than Credit Card
+    } else {
+        if(isNameValid(name) && isEmailValid(email) && isActivitiesValid())  {
+            validateFields()
+        } else {
+            validateFields()
+            e.preventDefault()
+        }
+    }
+})
