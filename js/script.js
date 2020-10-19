@@ -52,7 +52,7 @@ paymentInfoLegend.appendChild(paymentInfoErrorMessageP)
 
 const creditCardNumberInputP = document.createElement('p')
 creditCardNumberInputP.className = 'creditCardNumberInputP'
-creditCardNumberInputP.innerHTML = `<span style='color: red; font-size:11pt;'>Please enter a valid credit card number (10-14 digits) </span>`
+creditCardNumberInputP.innerHTML = `<span style='color: red; font-size:11pt;'>Please enter a valid credit card number (13-16 digits) </span>`
 creditCardNumberInput.previousElementSibling.appendChild(creditCardNumberInputP)
 
 const cvvNumberInputP = document.createElement('p')
@@ -225,7 +225,7 @@ const isNameValid = (name) => {
 }
 
 const isEmailValid = (email) => {
-    let regex = /^[^@]+@[^@.]+\.[a-z]+$/i
+    let regex = /^[^@]+@[^@.]+\.[a-z]{2,3}$/i
     return regex.test(email)
 }
 
@@ -245,7 +245,7 @@ const isActivitiesValid = () => {
 }
 
 const isCreditCardValid = (cardNumber) => {
-    let regex = /^\d{4}[ -]?\d{4}[ =]?\d{4}[ -]?\d{4}$/
+    let regex = /^\d{4}[ -]?\d{4}[ =]?\d{4}[ -]?\d{1,4}$/
     return regex.test(cardNumber)
 }
 
